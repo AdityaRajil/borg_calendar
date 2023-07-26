@@ -20,63 +20,113 @@ public class ModalMessageServer {
 
     private BlockingQueue<String> messageQ = new LinkedBlockingQueue<>();
 
-    private ModalMessageServer(){
-        Thread t = new Thread(){
+//    private ModalMessageServer(){
+//        Thread t = new Thread(){
+//
+//            @Override
+//            public void run() {
+//                try {
+//                    while (true) {
+//                        String msg = messageQ.take();
+//                        if (msg.startsWith("lock:")) {
+//                            final String lockmsg = msg.substring(5);
+//                            SwingUtilities.invokeLater(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    if (modalMessage == null || !modalMessage.isShowing()) {
+//                                        modalMessage = new ModalMessage(lockmsg, false);
+//                                        modalMessage.setVisible(true);
+//                                    } else {
+//                                        modalMessage.appendText(lockmsg);
+//                                    }
+//                                    modalMessage.setEnabled(false);
+//                                    modalMessage.toFront();
+//                                }
+//                            });
+//
+//                        } else if (msg.startsWith("log:")) {
+//                            final String lockmsg = msg.substring(4);
+//                            SwingUtilities.invokeLater(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    if (modalMessage != null && modalMessage.isShowing()) {
+//                                        modalMessage.appendText(lockmsg);
+//                                        // modalMessage.setEnabled(false);
+//                                        // modalMessage.toFront();
+//                                    }
+//
+//                                }
+//                            });
+//
+//                        } else if (msg.equals("unlock")) {
+//                            SwingUtilities.invokeLater(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    if (modalMessage.isShowing()) {
+//                                        modalMessage.setEnabled(true);
+//                                    }
+//                                }
+//                            });
+//
+//                        }
+//                    }
+//                } catch (InterruptedException e) {
+//                    Thread.currentThread().interrupt();
+//                }
+//            }
+//        };
+//
+//        t.start();
+//    }
 
-            @Override
-            public void run() {
-                try {
-                    while (true) {
-                        String msg = messageQ.take();
-                        if (msg.startsWith("lock:")) {
-                            final String lockmsg = msg.substring(5);
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (modalMessage == null || !modalMessage.isShowing()) {
-                                        modalMessage = new ModalMessage(lockmsg, false);
-                                        modalMessage.setVisible(true);
-                                    } else {
-                                        modalMessage.appendText(lockmsg);
-                                    }
-                                    modalMessage.setEnabled(false);
-                                    modalMessage.toFront();
-                                }
-                            });
-
-                        } else if (msg.startsWith("log:")) {
-                            final String lockmsg = msg.substring(4);
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (modalMessage != null && modalMessage.isShowing()) {
-                                        modalMessage.appendText(lockmsg);
-                                        // modalMessage.setEnabled(false);
-                                        // modalMessage.toFront();
-                                    }
-
-                                }
-                            });
-
-                        } else if (msg.equals("unlock")) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (modalMessage.isShowing()) {
-                                        modalMessage.setEnabled(true);
-                                    }
-                                }
-                            });
-
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+    private ModalMessageServer() {
+        Thread t = new Thread(() -> processMessages());
+        t.start();
+    }
+    private void processMessages() {
+        try {
+            while (true) {
+                String msg = messageQ.take();
+                if (msg.startsWith("lock:")) {
+                    processLockMessage(msg.substring(5));
+                } else if (msg.startsWith("log:")) {
+                    processLogMessage(msg.substring(4));
+                } else if (msg.equals("unlock")) {
+                    processUnlockMessage();
                 }
             }
-        };
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
-        t.start();
+    private void processLockMessage(String lockmsg) {
+        SwingUtilities.invokeLater(() -> {
+            if (modalMessage == null || !modalMessage.isShowing()) {
+                modalMessage = new ModalMessage(lockmsg, false);
+                modalMessage.setVisible(true);
+            } else {
+                modalMessage.appendText(lockmsg);
+            }
+            modalMessage.setEnabled(false);
+            modalMessage.toFront();
+        });
+    }
+
+    private void processLogMessage(String lockmsg) {
+        SwingUtilities.invokeLater(() -> {
+            if (modalMessage != null && modalMessage.isShowing()) {
+                modalMessage.appendText(lockmsg);
+            }
+        });
+    }
+
+    private void processUnlockMessage() {
+        SwingUtilities.invokeLater(() -> {
+            if (modalMessage != null && modalMessage.isShowing()) {
+                modalMessage.setEnabled(true);
+            }
+        });
     }
 
     public void sendMessage(String msg){
