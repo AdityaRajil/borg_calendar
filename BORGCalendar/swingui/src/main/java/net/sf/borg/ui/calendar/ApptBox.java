@@ -493,16 +493,20 @@ class ApptBox extends Box implements Box.Draggable {
 			text = todoMarker + " " + text;
 		}
 		
-		if( appt.isPrivate())
-		{
+		if( appt.isPrivate()) {
 			lockIcon.paintIcon(comp, g2, bounds.x + radius + offset, bounds.y + radius
 					+ smfontHeight / 2);
 			offset += lockIcon.getIconWidth();
 		}
-		
-		drawWrappedString(g2, text, bounds.x + radius
-				+ offset, bounds.y + radius, bounds.width
-				- radius, getTextColor().equals("strike"));
+
+		Map<String, Object> drawContext = new HashMap<>();
+		drawContext.put("g2", g2);
+		drawContext.put("text", text);
+		drawContext.put("x", bounds.x + radius + offset);
+		drawContext.put("y", bounds.y + radius);
+		drawContext.put("w", bounds.width - radius);
+		drawContext.put("strike", getTextColor().equals("strike"));
+		drawWrappedString(drawContext);
 		
 		if( isSelected)
 		{
@@ -533,11 +537,18 @@ class ApptBox extends Box implements Box.Draggable {
 	/**
 	 * draw a string with word wrap.
 	 */
-	private static void drawWrappedString(Graphics2D g2, String tx, int x, int y, int w, boolean strike) {
+
+	private static void drawWrappedString(Map<String, Object> drawContext) {Graphics2D g2 = (Graphics2D) drawContext.get("g2");
+		String tx = (String) drawContext.get("text");
+		int x = (int) drawContext.get("x");
+		int y = (int) drawContext.get("y");
+		int w = (int) drawContext.get("w");
+		boolean strike = (boolean) drawContext.get("strike");
+
 		int fontDesent = g2.getFontMetrics().getDescent();
 		HashMap<TextAttribute, Serializable> hm = new HashMap<TextAttribute, Serializable>();
 		hm.put(TextAttribute.FONT, g2.getFont());
-		if( strike )
+		if (strike)
 			hm.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
 		AttributedString as = new AttributedString(tx, hm);
 		AttributedCharacterIterator para = as.getIterator();

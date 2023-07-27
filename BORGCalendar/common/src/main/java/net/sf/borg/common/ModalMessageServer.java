@@ -20,65 +20,6 @@ public class ModalMessageServer {
 
     private BlockingQueue<String> messageQ = new LinkedBlockingQueue<>();
 
-//    private ModalMessageServer(){
-//        Thread t = new Thread(){
-//
-//            @Override
-//            public void run() {
-//                try {
-//                    while (true) {
-//                        String msg = messageQ.take();
-//                        if (msg.startsWith("lock:")) {
-//                            final String lockmsg = msg.substring(5);
-//                            SwingUtilities.invokeLater(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    if (modalMessage == null || !modalMessage.isShowing()) {
-//                                        modalMessage = new ModalMessage(lockmsg, false);
-//                                        modalMessage.setVisible(true);
-//                                    } else {
-//                                        modalMessage.appendText(lockmsg);
-//                                    }
-//                                    modalMessage.setEnabled(false);
-//                                    modalMessage.toFront();
-//                                }
-//                            });
-//
-//                        } else if (msg.startsWith("log:")) {
-//                            final String lockmsg = msg.substring(4);
-//                            SwingUtilities.invokeLater(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    if (modalMessage != null && modalMessage.isShowing()) {
-//                                        modalMessage.appendText(lockmsg);
-//                                        // modalMessage.setEnabled(false);
-//                                        // modalMessage.toFront();
-//                                    }
-//
-//                                }
-//                            });
-//
-//                        } else if (msg.equals("unlock")) {
-//                            SwingUtilities.invokeLater(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    if (modalMessage.isShowing()) {
-//                                        modalMessage.setEnabled(true);
-//                                    }
-//                                }
-//                            });
-//
-//                        }
-//                    }
-//                } catch (InterruptedException e) {
-//                    Thread.currentThread().interrupt();
-//                }
-//            }
-//        };
-//
-//        t.start();
-//    }
-
     private ModalMessageServer() {
         Thread t = new Thread(() -> processMessages());
         t.start();

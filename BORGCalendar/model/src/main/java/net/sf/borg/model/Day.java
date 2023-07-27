@@ -349,7 +349,7 @@ public class Day {
 				ret.addItem(hol);
 
 		}
-		
+
 		// common holidays
 		if (show_can_hols.equals("true") || show_us_hols.equals("true")) {
 
@@ -383,7 +383,7 @@ public class Day {
 					ret.addItem(e);
 			}
 		}
-		
+
 
 		return (ret);
 
