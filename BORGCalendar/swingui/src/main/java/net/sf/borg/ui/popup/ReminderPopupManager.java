@@ -214,7 +214,7 @@ public class ReminderPopupManager extends ReminderManager {
 		ReminderPopup popup = new ReminderPopup(instance);
 		pops.put(instance, popup);
 
-		popup.updateMessage();
+		popup.updateMessageNew();
 
 	}
 
@@ -255,7 +255,7 @@ public class ReminderPopupManager extends ReminderManager {
 			}
 
 			// set the time to go message
-			popup.updateMessage();
+			popup.updateMessageNew();
 
 		}
 

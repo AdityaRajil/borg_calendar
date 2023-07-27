@@ -20,9 +20,14 @@
 package net.sf.borg.ui.popup;
 
 import lombok.Data;
+import net.sf.borg.common.PrefName;
+import net.sf.borg.common.Prefs;
 import net.sf.borg.common.Resource;
 import net.sf.borg.model.ReminderTimes;
+import net.sf.borg.ui.SunTrayIconProxy;
 
+import javax.swing.*;
+import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -32,11 +37,24 @@ import java.util.Date;
  */
 @Data
 abstract public class ReminderInstance {
+	private static final long serialVersionUID = 1L;
+
+	/** The Reminder Instance being shown. */
+	private ReminderInstance reminderInstance = null;
+
+	/** The appointment information. */
+	private JLabel appointmentInformation = null;
+
+	/** The no more reminders button. */
+	private JRadioButton noMoreRemindersButton = null;
+
 
 	/**
 	 * was the reminder hidden by the user
 	 */
 	private boolean hidden = false;
+
+	private JLabel timeToGoMessage = null;
 
 	// the instance time - this is the time when this instance occurs. this
 	// will be
@@ -233,5 +251,64 @@ abstract public class ReminderInstance {
 	 * @return true, if successful
 	 */
 	abstract public boolean shouldBeShown();
+
+	public void updateMessage() {
+		// read the appt and get the date
+
+		String message;
+
+		// untimed todo
+		if (this.isNote() && this.isTodo()) {
+			message = this.calculateToGoMessage();
+		} else {
+			// timed appt
+			Date d = this.getInstanceTime();
+			if (d == null)
+				return;
+
+			// if alarm is due to be shown, show it and play sound
+
+			int reminderIndex = this.dueForPopup();
+			if( reminderIndex == -1 )
+				return;
+
+			int minutesToGo = ReminderTimes.getTimes(reminderIndex);
+
+			// create a message saying how much time to go there is
+			if (minutesToGo < 0) {
+				message = -minutesToGo + " "
+						+ Resource.getResourceString("minutes_ago");
+			} else if (minutesToGo == 0) {
+				message = Resource.getResourceString("Now");
+			} else {
+				message = minutesToGo + " "
+						+ Resource.getResourceString("minute_reminder");
+			}
+
+			markAsShown(reminderIndex);
+
+		}
+
+		timeToGoMessage.setText(message);
+
+		timeToGoMessage.setVisible(true);
+		toFront();
+		timeToGoMessage.setVisible(true);
+
+		setShown(true);
+
+		// play a sound
+		ReminderSound.playReminderSound(Prefs
+				.getPref(PrefName.BEEPINGREMINDERS));
+
+		if (Prefs.getBoolPref(PrefName.TASKBAR_REMINDERS)) {
+			String tx = DateFormat.getDateInstance(DateFormat.SHORT).format(this.getInstanceTime());
+			tx += " " + this.getText();
+			SunTrayIconProxy.displayNotification("Borg " + Resource.getResourceString("Reminder"),tx);
+		}
+
+	}
+
+	protected abstract void toFront();
 
 }

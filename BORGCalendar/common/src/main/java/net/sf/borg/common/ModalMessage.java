@@ -145,4 +145,16 @@ public class ModalMessage extends JDialog {
 	public void setText(String s) {
 		messageText.setText(s);
 	}
+
+	public void processLockMessage(String lockmsg) {
+		if (!isShowing()) {
+			setText(lockmsg);
+			setVisible(true);
+		} else {
+			appendText(lockmsg);
+		}
+		setEnabled(false);
+		toFront();
+	}
+
 } 

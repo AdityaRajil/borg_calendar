@@ -211,61 +211,67 @@ class ReminderPopup extends View {
 	/**
 	 * update the popup's message
 	 */
-	public void updateMessage() {
-		// read the appt and get the date
+//	public void updateMessage() {
+//		// read the appt and get the date
+//
+//		String message;
+//
+//		// untimed todo
+//		if (reminderInstance.isNote() && reminderInstance.isTodo()) {
+//			message = reminderInstance.calculateToGoMessage();
+//		} else {
+//			// timed appt
+//			Date d = reminderInstance.getInstanceTime();
+//			if (d == null)
+//				return;
+//
+//			// if alarm is due to be shown, show it and play sound
+//
+//			int reminderIndex = reminderInstance.dueForPopup();
+//			if( reminderIndex == -1 )
+//				return;
+//
+//			int minutesToGo = ReminderTimes.getTimes(reminderIndex);
+//
+//			// create a message saying how much time to go there is
+//			if (minutesToGo < 0) {
+//				message = -minutesToGo + " "
+//						+ Resource.getResourceString("minutes_ago");
+//			} else if (minutesToGo == 0) {
+//				message = Resource.getResourceString("Now");
+//			} else {
+//				message = minutesToGo + " "
+//						+ Resource.getResourceString("minute_reminder");
+//			}
+//
+//			getReminderInstance().markAsShown(reminderIndex);
+//
+//		}
+//
+//		timeToGoMessage.setText(message);
+//
+//		setVisible(true);
+//		toFront();
+//		setVisible(true);
+//
+//		getReminderInstance().setShown(true);
+//
+//		// play a sound
+//		ReminderSound.playReminderSound(Prefs
+//				.getPref(PrefName.BEEPINGREMINDERS));
+//
+//		if (Prefs.getBoolPref(PrefName.TASKBAR_REMINDERS)) {
+//			String tx = DateFormat.getDateInstance(DateFormat.SHORT).format(reminderInstance.getInstanceTime());
+//			tx += " " + reminderInstance.getText();
+//			SunTrayIconProxy.displayNotification("Borg " + Resource.getResourceString("Reminder"),tx);
+//		}
+//
+//	}
 
-		String message;
-
-		// untimed todo
-		if (reminderInstance.isNote() && reminderInstance.isTodo()) {
-			message = reminderInstance.calculateToGoMessage();
-		} else {
-			// timed appt
-			Date d = reminderInstance.getInstanceTime();
-			if (d == null)
-				return;
-
-			// if alarm is due to be shown, show it and play sound
-
-			int reminderIndex = reminderInstance.dueForPopup();
-			if( reminderIndex == -1 )
-				return;
-			
-			int minutesToGo = ReminderTimes.getTimes(reminderIndex);
-			
-			// create a message saying how much time to go there is
-			if (minutesToGo < 0) {
-				message = -minutesToGo + " "
-						+ Resource.getResourceString("minutes_ago");
-			} else if (minutesToGo == 0) {
-				message = Resource.getResourceString("Now");
-			} else {
-				message = minutesToGo + " "
-						+ Resource.getResourceString("minute_reminder");
-			}
-			
-			getReminderInstance().markAsShown(reminderIndex);
-
-		}
-		
-		timeToGoMessage.setText(message);
-		
-		setVisible(true);
-		toFront();
-		setVisible(true);
-		
-		getReminderInstance().setShown(true);
-		
-		// play a sound
-		ReminderSound.playReminderSound(Prefs
-				.getPref(PrefName.BEEPINGREMINDERS));
-		
-		if (Prefs.getBoolPref(PrefName.TASKBAR_REMINDERS)) {
-			String tx = DateFormat.getDateInstance(DateFormat.SHORT).format(reminderInstance.getInstanceTime());
-			tx += " " + reminderInstance.getText();
-			SunTrayIconProxy.displayNotification("Borg " + Resource.getResourceString("Reminder"),tx);
-		}
-
+	/**
+	 * update the popup's message
+	 */
+	public void updateMessageNew() {
+		reminderInstance.updateMessage();
 	}
-
 }
